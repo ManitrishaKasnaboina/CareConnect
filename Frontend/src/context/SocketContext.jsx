@@ -13,7 +13,10 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Only connect when user is logged in
     if (token && user) {
-      const socketUrl = import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, '') || 'http://localhost:5000';
+      const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+      const socketUrl = configuredApiUrl
+        ? configuredApiUrl.replace(/\/api\/?$/, '')
+        : window.location.origin;
       const newSocket = io(socketUrl, {
         transports: ['polling', 'websocket'],
       });
