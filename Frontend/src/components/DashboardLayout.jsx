@@ -5,7 +5,7 @@ import { Menu, Bell, LogOut, X, Mail, ShieldCheck } from 'lucide-react';
 import clsx from 'clsx';
 import { useSocket } from '../context/SocketContext';
 
-const DashboardLayout = ({ roleTitle, navItems, accentColorClass, accentBgClass, accentTextClass }) => {
+const DashboardLayout = ({ roleTitle, navItems, accentBgClass, accentTextClass }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);

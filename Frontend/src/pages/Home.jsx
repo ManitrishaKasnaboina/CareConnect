@@ -8,7 +8,6 @@ import {
   ShieldCheck, 
   Star, 
   Clock, 
-  CheckCircle2, 
   Wrench, 
   Zap, 
   Sparkles, 

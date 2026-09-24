@@ -20,7 +20,7 @@ const Login = () => {
       if (user.role === 'ADMIN') navigate('/admin');
       else if (user.role === 'PROVIDER') navigate('/provider');
       else navigate('/customer');
-    } catch (err) {
+    } catch {
       toast.error('Google login failed.');
     } finally {
       setIsSubmitting(false);

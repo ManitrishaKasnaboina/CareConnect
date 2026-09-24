@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -11,7 +11,9 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedRole, setSelectedRole] = useState('CUSTOMER');
+  const [selectedRole, setSelectedRole] = useState(() => (
+    searchParams.get('role')?.toUpperCase() === 'PROVIDER' ? 'PROVIDER' : 'CUSTOMER'
+  ));
 
   const handleGoogleSuccess = async (tokenResponse) => {
     setIsSubmitting(true);
@@ -20,7 +22,7 @@ const Register = () => {
       toast.success(`Welcome to CareConnect, ${user.name}!`);
       if (user.role === 'PROVIDER') navigate('/provider');
       else navigate('/customer');
-    } catch (err) {
+    } catch {
       toast.error('Google sign-in failed.');
     } finally {
       setIsSubmitting(false);
@@ -31,13 +33,6 @@ const Register = () => {
     onSuccess: handleGoogleSuccess,
     onError: () => toast.error('Google sign-in failed.'),
   });
-
-  useEffect(() => {
-    const roleParam = searchParams.get('role');
-    if (roleParam && roleParam.toUpperCase() === 'PROVIDER') {
-      setSelectedRole('PROVIDER');
-    }
-  }, [searchParams]);
 
   const {
     register,
@@ -67,7 +62,10 @@ const Register = () => {
         navigate(searchParams.get('next') || '/customer');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Registration failed. Please try again.';
+      const msg = err.response?.data?.message
+        || (err.request
+          ? 'Unable to reach the server. Check the API URL and try again.'
+          : 'Registration failed. Please try again.');
       toast.error(msg);
     } finally {
       setIsSubmitting(false);
@@ -78,12 +76,12 @@ const Register = () => {
     <div className="min-h-screen flex bg-white">
       {/* Left side: Form */}
       <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24 z-10 relative shadow-2xl overflow-y-auto">
-        <div className="mx-auto w-full max-w-sm lg:w-[400px] space-y-8">
+        <div className="mx-auto w-full max-w-sm lg:w-100 space-y-8">
           
           {/* Header */}
           <div className="text-center lg:text-left">
             <Link to="/" className="inline-flex items-center gap-2 group mb-3">
-              <div className="w-12 h-12 bg-gradient-to-tr from-primary-600 to-primary-400 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 bg-linear-to-tr from-primary-600 to-primary-400 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary-500/20 group-hover:scale-105 transition-transform">
                 <HeartHandshake className="w-7 h-7" />
               </div>
             </Link>
@@ -211,7 +209,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-2 py-3.5 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/35 transition-all transform active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full mt-2 py-3.5 px-4 bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/35 transition-all transform active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -264,7 +262,7 @@ const Register = () => {
 
       {/* Right side: Live Image Background */}
       <div className="hidden lg:block relative w-0 flex-1 overflow-hidden bg-slate-900">
-        <div className="absolute inset-0 bg-gradient-to-tr from-primary-700/80 to-slate-900/90 z-10 animate-gradient-x mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-linear-to-tr from-primary-700/80 to-slate-900/90 z-10 animate-gradient-x mix-blend-multiply"></div>
         <img
           className="absolute inset-0 h-full w-full object-cover animate-kenburns opacity-70"
           src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2070&auto=format&fit=crop"

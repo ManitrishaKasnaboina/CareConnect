@@ -25,8 +25,6 @@ const LocationTracker = () => {
   useEffect(() => {
     if (!sharing || !socket || !isConnected || !jobId) return undefined;
     if (!navigator.geolocation) {
-      setError('Location is not supported by this browser.');
-      setSharing(false);
       return undefined;
     }
 
@@ -96,6 +94,10 @@ const LocationTracker = () => {
             <button
               type="button"
               onClick={() => {
+                if (!navigator.geolocation) {
+                  setError('Location is not supported by this browser.');
+                  return;
+                }
                 setError('');
                 setSharing((current) => !current);
               }}
@@ -177,7 +179,7 @@ const LocationTracker = () => {
             
             {!sharing && (
               <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-30 transition-all">
-                <div className="text-center bg-white p-6 rounded-3xl shadow-xl border border-slate-100 max-w-[260px]">
+                <div className="text-center bg-white p-6 rounded-3xl shadow-xl border border-slate-100 max-w-65">
                   <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <MapPin className="w-6 h-6 text-slate-400" />
                   </div>

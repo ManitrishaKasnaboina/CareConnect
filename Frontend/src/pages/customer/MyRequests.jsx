@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createBooking, getMyRequests, getQuotesForRequest, updateQuoteStatus } from '../../api/services';
-import { PlusCircle, Search, Filter, Clock, ArrowRight, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { PlusCircle, Search, Clock, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { formatRupees } from '../../utils/currency';
 
 const STATUS_CONFIG = {

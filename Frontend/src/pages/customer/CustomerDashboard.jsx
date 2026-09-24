@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getMyRequests, getMyBookings } from '../../api/services';
 import {
-  ClipboardList, CalendarCheck, DollarSign, Star,
+  ClipboardList, CalendarCheck,
   PlusCircle, ArrowRight, Clock, CheckCircle2,
   AlertCircle, Loader2, TrendingUp, Sparkles
 } from 'lucide-react';
@@ -45,7 +45,7 @@ const CustomerDashboard = () => {
         ]);
         if (reqRes.status === 'fulfilled') setRequests(reqRes.value.data);
         if (bookRes.status === 'fulfilled') setBookings(bookRes.value.data);
-      } catch (err) {
+      } catch {
         // errors handled per-call above
       } finally {
         setLoading(false);

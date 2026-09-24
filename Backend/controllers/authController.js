@@ -16,7 +16,26 @@ const generateToken = (id) => {
 // @access  Public
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const name = req.body.name?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
+    const role = req.body.role || 'CUSTOMER';
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(503).json({ message: 'Registration is temporarily unavailable. Server authentication is not configured.' });
+    }
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    if (!['CUSTOMER', 'PROVIDER'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid registration role' });
+    }
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -48,6 +67,13 @@ exports.registerUser = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    if (error?.name === 'ValidationError') {
+      const message = Object.values(error.errors).map(({ message: detail }) => detail).join(', ');
+      return res.status(400).json({ message });
+    }
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
