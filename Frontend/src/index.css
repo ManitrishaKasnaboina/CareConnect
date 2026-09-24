@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss" source(none);
+@source "./**/*.{js,ts,jsx,tsx}";
+@source "../index.html";
+
+@theme {
+  --color-primary-50: #e7eff0;
+  --color-primary-100: #c2dada;
+  --color-primary-200: #99c2c2;
+  --color-primary-300: #6ca9a9;
+  --color-primary-400: #499494;
+  --color-primary-500: #0F5C5C;
+  --color-primary-600: #0d5454;
+  --color-primary-700: #0a4343;
+  --color-primary-800: #073535;
+  --color-primary-900: #042424;
+
+  --color-accent-400: #ffa266;
+  --color-accent-500: #FF8A3D;
+  --color-accent-600: #e67c37;
+
+  --font-sans: 'Inter', sans-serif;
+
+  --animate-kenburns: kenburns 10s ease-out infinite alternate;
+  --animate-gradient-x: gradient-x 15s ease infinite;
+
+  @keyframes kenburns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  }
+
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
