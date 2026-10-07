@@ -32,8 +32,8 @@ const Login = () => {
     onError: () => toast.error('Google login failed.'),
   });
 
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-  const googleConfigured = Boolean(googleClientId && !googleClientId.startsWith('replace-with-'));
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.GOOGLE_CLIENT_ID || '';
+  const googleConfigured = Boolean(googleClientId && googleClientId !== 'dummy_client_id' && !googleClientId.startsWith('replace-with-'));
 
   const {
     register,

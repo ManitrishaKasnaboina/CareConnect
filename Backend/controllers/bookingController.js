@@ -12,6 +12,66 @@ const notifyUser = (userId, payload) => {
   }
 };
 
+// @desc    Mark a booking as paid by the customer
+// @route   PUT /api/bookings/:id/pay
+// @access  Private/Customer
+exports.payBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+      customer: req.user.id
+    }).populate('quote', ['amount', 'status']);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found or unauthorized' });
+    }
+
+    if (booking.paymentStatus === 'PAID') {
+      return res.status(400).json({ message: 'This booking has already been paid for' });
+    }
+
+    const amount = Number(req.body.amount || booking.quote?.amount || 0);
+    const paymentMethod = String(req.body.paymentMethod || 'UPI').toUpperCase();
+    const paymentReference = String(req.body.paymentReference || '').trim();
+
+    if (!['CARD', 'UPI', 'WALLET', 'BANK_TRANSFER', 'CASH', 'MANUAL'].includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Invalid payment method' });
+    }
+
+    if (!paymentReference) {
+      return res.status(400).json({ message: 'Payment reference is required' });
+    }
+
+    const bookingAmount = Number(booking.quote?.amount || 0);
+    if (bookingAmount > 0 && amount > 0 && amount !== bookingAmount) {
+      return res.status(400).json({ message: `Amount must match the quote total of ${bookingAmount}` });
+    }
+
+    booking.paymentStatus = 'PAID';
+    booking.paymentMethod = paymentMethod;
+    booking.paymentReference = paymentReference;
+    booking.amountPaid = bookingAmount || amount || 0;
+    booking.paidAt = new Date();
+    await booking.save();
+
+    const populatedBooking = await Booking.findById(booking._id)
+      .populate('provider', ['name', 'email', 'role'])
+      .populate('customer', ['name', 'email', 'role'])
+      .populate('quote', ['amount', 'estimatedTime', 'status'])
+      .populate('request', ['description', 'location', 'locationCoordinates', 'aiMetadata']);
+
+    notifyUser(booking.provider, {
+      type: 'PAYMENT_RECEIVED',
+      booking: populatedBooking,
+      message: `Payment received for ${populatedBooking.request?.aiMetadata?.categoryName || 'service job'}`
+    });
+
+    res.json(populatedBooking);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // @desc    Create a booking from a quote
 // @route   POST /api/bookings
 // @access  Private/Customer

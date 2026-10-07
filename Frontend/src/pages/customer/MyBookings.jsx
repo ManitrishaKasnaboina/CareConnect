@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getMyBookings, rateBooking } from '../../api/services';
-import { CalendarCheck, Clock, MapPin, User, Loader2, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
+import { getMyBookings, payBooking, rateBooking } from '../../api/services';
+import { CalendarCheck, Clock, MapPin, User, Loader2, Sparkles, CheckCircle2, XCircle, CreditCard, Wallet } from 'lucide-react';
 import LiveMap from '../../components/LiveMap';
 import { formatRupees } from '../../utils/currency';
 import { toast } from 'react-toastify';
@@ -18,6 +18,9 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('upcoming');
   const [ratingBooking, setRatingBooking] = useState(null);
+  const [paymentBooking, setPaymentBooking] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('UPI');
+  const [paymentReference, setPaymentReference] = useState('');
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState('');
 
@@ -44,6 +47,25 @@ const MyBookings = () => {
       toast.success('Thanks for rating your provider.');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to submit rating.');
+    }
+  };
+
+  const submitPayment = async (event) => {
+    event.preventDefault();
+    try {
+      const updatedBooking = await payBooking(paymentBooking._id, {
+        amount: paymentBooking.quote?.amount,
+        paymentMethod,
+        paymentReference,
+      });
+
+      setBookings(current => current.map(booking => booking._id === paymentBooking._id ? updatedBooking.data : booking));
+      setPaymentBooking(null);
+      setPaymentMethod('UPI');
+      setPaymentReference('');
+      toast.success('Payment recorded successfully.');
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Unable to process payment.');
     }
   };
 
@@ -145,6 +167,26 @@ const MyBookings = () => {
                     </div>
                   )}
                 </div>
+                {booking.status !== 'CANCELLED' && (
+                  <div className="mt-4 border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-xs">
+                      {booking.paymentStatus === 'PAID' ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Paid via {booking.paymentMethod}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-700">
+                          <Wallet className="w-3.5 h-3.5" /> Payment pending
+                        </span>
+                      )}
+                    </div>
+                    {booking.paymentStatus !== 'PAID' && (
+                      <button onClick={() => setPaymentBooking(booking)} className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2 text-xs font-bold text-white hover:bg-primary-700">
+                        <CreditCard className="w-3.5 h-3.5" /> Pay now
+                      </button>
+                    )}
+                  </div>
+                )}
                 {booking.status === 'COMPLETED' && (
                   <div className="mt-4 border-t border-slate-100 pt-4">
                     {booking.customerRating ? (
@@ -174,6 +216,19 @@ const MyBookings = () => {
               </div>
             );
           })}
+        </div>
+      )}
+      {paymentBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <form onSubmit={submitPayment} className="w-full max-w-md space-y-4 rounded-2xl bg-white p-6 shadow-2xl">
+            <h2 className="text-xl font-extrabold text-slate-900">Complete payment</h2>
+            <p className="text-sm text-slate-500">Pay {formatRupees(paymentBooking.quote?.amount || 0)} for {paymentBooking.request?.aiMetadata?.categoryName || 'this service'}.</p>
+            <select value={paymentMethod} onChange={event => setPaymentMethod(event.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+              {['UPI', 'CARD', 'WALLET', 'BANK_TRANSFER', 'CASH', 'MANUAL'].map(method => <option key={method} value={method}>{method}</option>)}
+            </select>
+            <input value={paymentReference} onChange={event => setPaymentReference(event.target.value)} placeholder="Transaction / UPI / receipt reference" className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" required />
+            <div className="flex justify-end gap-2"><button type="button" onClick={() => setPaymentBooking(null)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm">Cancel</button><button className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-bold text-white">Pay now</button></div>
+          </form>
         </div>
       )}
       {ratingBooking && (

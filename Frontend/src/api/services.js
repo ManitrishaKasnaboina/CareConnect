@@ -21,6 +21,7 @@ export const updateQuoteStatus = (id, status) => API.put(`/quotes/${id}/status`,
 // ─── Bookings ─────────────────────────────────────────────────────────────────
 export const getMyBookings = () => API.get('/bookings/me');
 export const createBooking = (data) => API.post('/bookings', data);
+export const payBooking = (id, data = {}) => API.put(`/bookings/${id}/pay`, data);
 export const getProviderBookings = () => API.get('/bookings/provider');
 export const updateBookingStatus = (id, status) => API.put(`/bookings/${id}/status`, { status });
 export const rateBooking = (id, rating, review) => API.put(`/bookings/${id}/rating`, { rating, review });
@@ -30,6 +31,7 @@ export const getAllBookings = () => API.get('/bookings');
 export const getProviderProfile = () => API.get('/providers/me');
 export const updateProviderProfile = (data) => API.put('/providers/me', data);
 export const getAllProviders = (params) => API.get('/providers', { params });
+export const getProviderById = (id) => API.get(`/providers/${id}`);
 
 // ─── Services / Categories ───────────────────────────────────────────────────
 export const getServiceCategories = () => API.get('/services');

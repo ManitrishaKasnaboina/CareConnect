@@ -34,6 +34,29 @@ const bookingSchema = new mongoose.Schema({
     enum: ['CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
     default: 'CONFIRMED'
   },
+  paymentStatus: {
+    type: String,
+    enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'],
+    default: 'PENDING'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['CARD', 'UPI', 'WALLET', 'BANK_TRANSFER', 'CASH', 'MANUAL'],
+    default: 'MANUAL'
+  },
+  paymentReference: {
+    type: String,
+    trim: true,
+    maxlength: 120
+  },
+  amountPaid: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  paidAt: {
+    type: Date
+  },
   customerRating: {
     type: Number,
     min: 1,

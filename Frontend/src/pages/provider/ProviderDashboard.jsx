@@ -124,11 +124,18 @@ const ProviderDashboard = () => {
           <div className="max-w-xl text-white">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-200">Professional service dashboard</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight md:text-4xl">
-              Welcome back, {user?.name?.split(' ')[0] || 'Provider'}
+              Welcome back, {profile?.displayName || user?.name?.split(' ')[0] || 'Provider'}
             </h1>
-            <p className="mt-3 text-sm text-slate-200 md:text-base">
-              Manage jobs, respond faster, and keep every customer update in sync.
+            <p className="mt-2 text-sm text-orange-100">
+              {profile?.headline || 'Keep your profile polished and customers will trust you faster.'}
             </p>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              {profile?.skills?.slice(0, 4).map(skill => (
+                <span key={skill} className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-orange-50">
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
 
           <button

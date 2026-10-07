@@ -7,23 +7,55 @@ const providerProfileSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  displayName: {
+    type: String,
+    trim: true,
+    maxlength: 80
+  },
+  headline: {
+    type: String,
+    trim: true,
+    maxlength: 120
+  },
+  phone: {
+    type: String,
+    trim: true,
+    maxlength: 20
+  },
   serviceCategories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ServiceCategory'
   }],
   skills: [{
-    type: String
+    type: String,
+    trim: true
+  }],
+  languages: [{
+    type: String,
+    trim: true
   }],
   experienceYears: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
   serviceArea: {
-    type: String, // E.g., "New York", "10001"
+    type: String,
     required: [true, 'Please provide a service area']
   },
+  hourlyRate: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   bio: {
-    type: String
+    type: String,
+    trim: true,
+    maxlength: 1500
+  },
+  profileImage: {
+    type: String,
+    trim: true
   },
   isAvailable: {
     type: Boolean,

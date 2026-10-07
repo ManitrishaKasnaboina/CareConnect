@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createBooking, getMyBookings, updateBookingStatus, rateBooking } = require('../controllers/bookingController');
+const { createBooking, getMyBookings, updateBookingStatus, rateBooking, payBooking } = require('../controllers/bookingController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
 router.route('/')
@@ -12,6 +12,9 @@ router.route('/me')
 
 router.route('/provider')
   .get(protect, authorizeRoles('PROVIDER'), getMyBookings);
+
+router.route('/:id/pay')
+  .put(protect, authorizeRoles('CUSTOMER'), payBooking);
 
 router.route('/:id/status')
   .put(protect, authorizeRoles('PROVIDER'), updateBookingStatus);

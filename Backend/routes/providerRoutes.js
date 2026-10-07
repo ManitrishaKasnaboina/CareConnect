@@ -3,7 +3,8 @@ const router = express.Router();
 const { 
   createOrUpdateProfile, 
   getMyProfile, 
-  getAllProviders 
+  getAllProviders,
+  getProviderById
 } = require('../controllers/providerController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
@@ -19,5 +20,8 @@ router.route('/profile/me')
 router.route('/me')
   .get(protect, authorizeRoles('PROVIDER'), getMyProfile)
   .put(protect, authorizeRoles('PROVIDER'), createOrUpdateProfile);
+
+router.route('/:id')
+  .get(getProviderById);
 
 module.exports = router;

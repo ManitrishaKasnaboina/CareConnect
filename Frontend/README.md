@@ -7,6 +7,21 @@ including `/api`, for example `https://your-backend.example.com/api`, then
 redeploy the frontend. Vite embeds this value during the build, so changing it
 requires a new deployment.
 
+Set `VITE_GOOGLE_CLIENT_ID` to the Google OAuth **Web application** client ID in
+the frontend hosting provider. In Google Cloud Console, open that same OAuth
+client and add each deployed frontend origin under **Authorized JavaScript
+origins**. Enter only the origin (scheme and hostname, plus a port if needed),
+for example `https://your-frontend.example.com`—not a page path such as
+`/login`. Add both the hosting-provider domain and any custom domain users visit.
+For local development, keep `http://localhost:5173` registered as well.
+
+If Google sign-in shows `Error 400: origin_mismatch` after deployment, the
+current browser origin is missing from that OAuth client's authorized
+JavaScript origins, or the deployed frontend is using a different client ID.
+Match the frontend `VITE_GOOGLE_CLIENT_ID` to the backend `GOOGLE_CLIENT_ID`,
+save the OAuth client settings, and redeploy the frontend if its environment
+variable changed.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

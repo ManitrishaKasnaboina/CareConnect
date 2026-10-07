@@ -57,6 +57,7 @@ const CustomerDashboard = () => {
   const activeRequests = requests.filter(r => ['PENDING','QUOTED','ACCEPTED','IN_PROGRESS'].includes(r.status));
   const completedCount = requests.filter(r => r.status === 'COMPLETED').length;
   const upcomingBookings = bookings.filter(b => b.status !== 'COMPLETED' && b.status !== 'CANCELLED');
+  const paidBookings = bookings.filter(b => b.paymentStatus === 'PAID').length;
 
   const recentRequests = [...requests].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
 
@@ -89,7 +90,7 @@ const CustomerDashboard = () => {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5">
         <StatCard
           icon={ClipboardList}
           label="Active Requests"
@@ -111,14 +112,22 @@ const CustomerDashboard = () => {
           sub="All time"
           accent="bg-emerald-50 text-emerald-600"
         />
+        <StatCard
+          icon={TrendingUp}
+          label="Paid Bookings"
+          value={paidBookings}
+          sub="Transactions recorded"
+          accent="bg-violet-50 text-violet-600"
+        />
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { to: '/customer/new-request', icon: PlusCircle, label: 'Request a Service', desc: 'Describe your issue & get matched', color: 'from-primary-600 to-teal-600' },
-          { to: '/customer/requests',    icon: ClipboardList, label: 'View My Requests',  desc: 'Track all your service requests',  color: 'from-blue-600 to-indigo-600' },
-          { to: '/customer/bookings',    icon: CalendarCheck, label: 'My Bookings',       desc: 'Manage your scheduled services',  color: 'from-violet-600 to-purple-600' },
+          { to: '/customer/providers',    icon: TrendingUp, label: 'Browse Providers', desc: 'Compare local service experts', color: 'from-blue-600 to-indigo-600' },
+          { to: '/customer/requests',    icon: ClipboardList, label: 'View My Requests',  desc: 'Track all your service requests',  color: 'from-violet-600 to-purple-600' },
+          { to: '/customer/bookings',    icon: CalendarCheck, label: 'My Bookings',       desc: 'Manage your scheduled services',  color: 'from-orange-500 to-amber-600' },
         ].map(item => (
           <Link key={item.to} to={item.to} className="group relative bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4 overflow-hidden">
             <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${item.color} text-white flex items-center justify-center shrink-0 shadow-md`}>
