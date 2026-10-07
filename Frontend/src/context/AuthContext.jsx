@@ -40,10 +40,12 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem('careconnect_user', JSON.stringify(verifiedUser));
         } catch (error) {
           console.error('Auth verification failed:', error);
-          setToken(null);
-          setUser(null);
-          localStorage.removeItem('careconnect_token');
-          localStorage.removeItem('careconnect_user');
+          if (error.response?.status === 401) {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('careconnect_token');
+            localStorage.removeItem('careconnect_user');
+          }
         }
       }
       setLoading(false);

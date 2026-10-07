@@ -108,15 +108,7 @@ exports.loginUser = async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 exports.getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
+  res.json(req.user);
 };
 
 // @desc    Update current user's account details
