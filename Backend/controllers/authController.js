@@ -119,6 +119,38 @@ exports.getMe = async (req, res) => {
   }
 };
 
+// @desc    Update current user's account details
+// @route   PUT /api/auth/me
+// @access  Private
+exports.updateMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.body.name !== undefined) user.name = req.body.name.trim();
+    if (req.body.email !== undefined) user.email = req.body.email.trim().toLowerCase();
+
+    await user.save();
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(400).json({ message: 'An account with this email already exists' });
+    }
+    if (error?.name === 'ValidationError') {
+      const message = Object.values(error.errors).map(({ message: detail }) => detail).join(', ');
+      return res.status(400).json({ message });
+    }
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // @desc    Google OAuth login
 // @route   POST /api/auth/google
 // @access  Public

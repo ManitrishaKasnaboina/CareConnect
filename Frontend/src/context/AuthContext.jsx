@@ -98,8 +98,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('careconnect_user');
   };
 
+  const updateUser = (userData) => {
+    const normalizedUser = normalizeUser({ ...user, ...userData });
+    setUser(normalizedUser);
+    localStorage.setItem('careconnect_user', JSON.stringify(normalizedUser));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, googleLogin, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, googleLogin, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

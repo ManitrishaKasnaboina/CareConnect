@@ -1,5 +1,8 @@
 import API from './axios';
 
+// ─── Account ──────────────────────────────────────────────────────────────────
+export const updateMyAccount = (data) => API.put('/auth/me', data);
+
 // ─── Service Requests ────────────────────────────────────────────────────────
 export const createServiceRequest = (data) => API.post('/requests', data);
 export const getMyRequests = () => API.get('/requests/me');

@@ -25,6 +25,7 @@ import OpsLayout from './layouts/OpsLayout';
 import LocationTracker from './pages/provider/LocationTracker';
 import ProviderDashboard from './pages/provider/ProviderDashboard';
 import MyBookings from './pages/customer/MyBookings';
+import AccountSettings from './pages/AccountSettings';
 import { getAvailableRequests, getMyQuotes, submitQuote, getProviderProfile, updateProviderProfile } from './api/services';
 import { toast } from 'react-toastify';
 
@@ -249,6 +250,7 @@ function App() {
                 <Route path="requests" element={<MyRequests />} />
                 <Route path="new-request" element={<NewRequest />} />
                 <Route path="bookings" element={<MyBookings />} />
+                <Route path="settings" element={<AccountSettings />} />
               </Route>
 
               {/* Provider Routes */}
@@ -277,6 +279,7 @@ function App() {
                 }
               >
                 <Route index element={<div>Admin Dashboard (WIP)</div>} />
+                <Route path="settings" element={<AccountSettings />} />
               </Route>
 
               {/* Ops Manager Routes */}
@@ -289,6 +292,7 @@ function App() {
                 }
               >
                 <Route index element={<div>Ops Dashboard (WIP)</div>} />
+                <Route path="settings" element={<AccountSettings />} />
               </Route>
 
               {/* Fallback */}
