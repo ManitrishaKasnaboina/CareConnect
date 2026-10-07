@@ -5,17 +5,33 @@ import { updateMyAccount } from '../api/services';
 
 const AccountSettings = () => {
   const { user, updateUser } = useAuth();
-  const [form, setForm] = useState(() => ({ name: user?.name || '', email: user?.email || '' }));
+  const [form, setForm] = useState(() => ({
+    name: user?.name || '',
+    email: user?.email || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  }));
   const [saving, setSaving] = useState(false);
 
   const updateField = event => setForm(current => ({ ...current, [event.target.name]: event.target.value }));
 
   const saveAccount = async event => {
     event.preventDefault();
+    if (form.newPassword && form.newPassword !== form.confirmPassword) {
+      toast.error('New passwords do not match.');
+      return;
+    }
     setSaving(true);
     try {
-      const { data } = await updateMyAccount(form);
+      const update = { name: form.name, email: form.email };
+      if (form.newPassword) {
+        update.currentPassword = form.currentPassword;
+        update.newPassword = form.newPassword;
+      }
+      const { data } = await updateMyAccount(update);
       updateUser(data);
+      setForm(current => ({ ...current, currentPassword: '', newPassword: '', confirmPassword: '' }));
       toast.success('Account settings saved.');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to save your account settings.');
@@ -36,6 +52,20 @@ const AccountSettings = () => {
           <label className="text-sm font-semibold text-slate-700">Email address
             <input name="email" type="email" value={form.email} onChange={updateField} required autoComplete="email" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-primary-500" />
           </label>
+        </div>
+        <div className="mt-8 border-t border-slate-100 pt-6">
+          <h2 className="text-lg font-bold text-slate-900">Change password</h2>
+          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+            <label className="text-sm font-semibold text-slate-700 sm:col-span-2">Current password
+              <input name="currentPassword" type="password" value={form.currentPassword} onChange={updateField} autoComplete="current-password" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-primary-500" />
+            </label>
+            <label className="text-sm font-semibold text-slate-700">New password
+              <input name="newPassword" type="password" value={form.newPassword} onChange={updateField} minLength="6" autoComplete="new-password" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-primary-500" />
+            </label>
+            <label className="text-sm font-semibold text-slate-700">Confirm new password
+              <input name="confirmPassword" type="password" value={form.confirmPassword} onChange={updateField} minLength="6" autoComplete="new-password" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-primary-500" />
+            </label>
+          </div>
         </div>
         <div className="mt-6 flex justify-end border-t border-slate-100 pt-5">
           <button disabled={saving} className="rounded-xl bg-primary-600 px-5 py-3 text-sm font-bold text-white hover:bg-primary-700 disabled:opacity-60">{saving ? 'Saving...' : 'Save settings'}</button>

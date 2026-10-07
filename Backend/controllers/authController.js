@@ -124,9 +124,23 @@ exports.getMe = async (req, res) => {
 // @access  Private
 exports.updateMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select('+password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    if (currentPassword !== undefined || newPassword !== undefined) {
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Current and new passwords are required' });
+      }
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters' });
+      }
+      if (!(await user.matchPassword(currentPassword))) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+      }
+      user.password = newPassword;
     }
 
     if (req.body.name !== undefined) user.name = req.body.name.trim();
